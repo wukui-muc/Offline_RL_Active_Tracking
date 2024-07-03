@@ -75,31 +75,19 @@ class CQLSAC_CNN_LSTM(nn.Module):
                                  lstm_layer=self.lstm_layer
                                 ).to(self.device)  # obs_shape,frame_stack
         self.CNN_LSTM_optimizer = optim.Adam(self.CNN_LSTM.parameters(), lr=learning_rate)
-
         # Actor Network
-
         self.actor_local = Actor(self.CNN_LSTM.outdim, action_size, hidden_size).to(device)
-        # self.actor_local = Actor_CNN(self.state_size, action_size, hidden_size).to(device)
-
         self.actor_optimizer = optim.Adam(self.actor_local.parameters(), lr=learning_rate)
 
         # Critic Network (w/ Target Network)
-
-        # self.critic1 = Critic_CNN(self.state_size, action_size, hidden_size, 2).to(device)
-        # self.critic2 = Critic_CNN(self.state_size, action_size, hidden_size, 1).to(device)
         self.critic1 = Critic(self.CNN_LSTM.outdim, action_size, hidden_size, 2).to(device)
         self.critic2 = Critic(self.CNN_LSTM.outdim, action_size, hidden_size, 1).to(device)
 
         assert self.critic1.parameters() != self.critic2.parameters()
-
-        # self.critic1_target = Critic_CNN(self.state_size, action_size, hidden_size).to(device)
         self.critic1_target = Critic(self.CNN_LSTM.outdim, action_size, hidden_size).to(device)
-
         self.critic1_target.load_state_dict(self.critic1.state_dict())
 
-        # self.critic2_target = Critic_CNN(self.state_size, action_size, hidden_size).to(device)
         self.critic2_target = Critic(self.CNN_LSTM.outdim, action_size, hidden_size).to(device)
-
         self.critic2_target.load_state_dict(self.critic2.state_dict())
 
         self.critic1_optimizer = optim.Adam(self.critic1.parameters(), lr=learning_rate)
@@ -126,8 +114,6 @@ class CQLSAC_CNN_LSTM(nn.Module):
         q2 = self.critic2(states, actions_pred.squeeze(0))
         min_Q = torch.min(q1, q2).cpu()
         actor_loss = ((alpha * log_pis.cpu() - min_Q)).mean()
-
-        # actor_loss = ((alpha * log_pis.cpu() - min_Q)).sum(axis=1).mean()
         return actor_loss.cuda(), log_pis
 
     def _compute_policy_values(self, obs_pi, obs_q):
@@ -164,8 +150,6 @@ class CQLSAC_CNN_LSTM(nn.Module):
         actions=np.array(actions.cpu())
         #action space 归一化
         # 定义每个维度的最小和最大值,每个环境不一样
-        # min_val = np.array([-30, -100]).astype(np.float32)
-        # max_val = np.array([30, 100]).astype(np.float32)
         min_val = np.array([-30, -100]).astype(np.float32)
         max_val = np.array([30, 100]).astype(np.float32)
 
@@ -212,9 +196,6 @@ class CQLSAC_CNN_LSTM(nn.Module):
             Q_target2_next = self.critic2_target(next_states, next_action)
             Q_target_next = torch.min(Q_target1_next, Q_target2_next) - self.alpha.to(self.device) * new_log_pi
             # Compute Q targets for current states (y_i)
-
-            # Q_targets = rewards.unsqueeze(2) + (self.gamma * (1 - dones) * Q_target_next)
-            # Q_targets =rewards.unsqueeze(2) + (self.gamma * (1 - dones.unsqueeze(2)) * Q_target_next)
             Q_targets = rewards.reshape(batch_size*self.lstm_seq_len,1) + (self.gamma * (1 - dones.reshape(batch_size*self.lstm_seq_len,1)) * Q_target_next)
 
         #
@@ -228,42 +209,8 @@ class CQLSAC_CNN_LSTM(nn.Module):
         critic2_loss = F.mse_loss(q2, Q_targets)
 
         # # CQL addon
-        # random_actions = torch.FloatTensor(q1.shape[0] * 10,q1.shape[1], actions.shape[-1]).uniform_(-1, 1).to(self.device)
-        # num_repeat = int(random_actions.shape[0] / states.shape[0])
-        #
-        # # temp_states = states.unsqueeze(1).repeat(1, num_repeat, 1).view(states.shape[0] * num_repeat, states.shape[1])
-        # # temp_next_states = next_states.unsqueeze(1).repeat(1, num_repeat, 1).view(next_states.shape[0] * num_repeat,
-        # #                                                                           next_states.shape[1])
-        # temp_states = states.unsqueeze(1).repeat(1, num_repeat, 1, 1).view(states.shape[0] * num_repeat,states.shape[1], states.shape[2])
-        # temp_next_states = next_states.unsqueeze(1).repeat(1, num_repeat, 1, 1).view(next_states.shape[0] * num_repeat,next_states.shape[1], next_states.shape[2])
-        #
-        # current_pi_values1, current_pi_values2 = self._compute_policy_values(temp_states, temp_states)
-        # next_pi_values1, next_pi_values2 = self._compute_policy_values(temp_next_states, temp_states)
-        #
-        # random_values1 = self._compute_random_values(temp_states, random_actions, self.critic1).reshape(states.shape[0],num_repeat,states.shape[1], 1)
-        # random_values2 = self._compute_random_values(temp_states, random_actions, self.critic2).reshape(states.shape[0],num_repeat,states.shape[1], 1)
-        #
-        # current_pi_values1 = current_pi_values1.reshape(states.shape[0], num_repeat,states.shape[1], 1)
-        # current_pi_values2 = current_pi_values2.reshape(states.shape[0], num_repeat,states.shape[1], 1)
-        #
-        # next_pi_values1 = next_pi_values1.reshape(states.shape[0], num_repeat,states.shape[1], 1)
-        # next_pi_values2 = next_pi_values2.reshape(states.shape[0], num_repeat,states.shape[1],1)
-        #
-        # cat_q1 = torch.cat([random_values1, current_pi_values1, next_pi_values1], 1)
-        # cat_q2 = torch.cat([random_values2, current_pi_values2, next_pi_values2], 1)
-        #
-        # assert cat_q1.shape == (states.shape[0], 3 * num_repeat,states.shape[1], 1), f"cat_q1 instead has shape: {cat_q1.shape}"
-        # assert cat_q2.shape == (states.shape[0], 3 * num_repeat,states.shape[1], 1), f"cat_q2 instead has shape: {cat_q2.shape}"
-        #
-        # cql1_scaled_loss = ((torch.logsumexp(cat_q1 / self.temp,
-        #                                      dim=1).mean() * self.cql_weight * self.temp) - q1.mean()) * self.cql_weight
-        # cql2_scaled_loss = ((torch.logsumexp(cat_q2 / self.temp,
-        #                                      dim=1).mean() * self.cql_weight * self.temp) - q2.mean()) * self.cql_weight
-
         random_actions = torch.FloatTensor(q1.shape[0] * 10, actions.shape[-1]).uniform_(-1, 1).to(self.device)
         num_repeat = int(random_actions.shape[0] / states.shape[0])
-        # temp_states = states.unsqueeze(1).repeat(1, num_repeat, 1,1,1).view(states.shape[0] * num_repeat, states.shape[1],states.shape[2],states.shape[3])
-        # temp_next_states = next_states.unsqueeze(1).repeat(1, num_repeat, 1,1,1).view(next_states.shape[0] * num_repeat, next_states.shape[1],next_states.shape[2],next_states.shape[3])
         temp_states = states.unsqueeze(1).repeat(1, num_repeat, 1).view(states.shape[0] * num_repeat, states.shape[1])
         temp_next_states = next_states.unsqueeze(1).repeat(1, num_repeat, 1).view(next_states.shape[0] * num_repeat,
                                                                                   next_states.shape[1])
@@ -321,11 +268,7 @@ class CQLSAC_CNN_LSTM(nn.Module):
         total_c2_loss.backward()
         clip_grad_norm_(self.critic2.parameters(), self.clip_grad_param)
         self.critic2_optimizer.step()
-        # CNN_loss.backward()
         self.CNN_LSTM_optimizer.step()
-
-
-
 
         # ----------------------- update target networks ----------------------- #
         self.soft_update(self.critic1, self.critic1_target)

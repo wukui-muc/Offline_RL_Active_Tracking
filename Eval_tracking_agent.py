@@ -30,12 +30,10 @@ from deva.ext.with_text_processor import process_frame_with_text as process_fram
 def get_config():
     parser = argparse.ArgumentParser(description='RL')
     parser.add_argument("--run_name", type=str, default="EvaluateModel", help="Run name, default: CQL-SAC")
-    parser.add_argument("--env", type=str, default="UnrealTrackGeneral-FlexibleRoom2-ContinuousColor-v4", help="Gym environment name, default: Pendulum-v0")
-    parser.add_argument("--max_distractor", type=int, default=8, help="")
-    parser.add_argument("--load_agent_model", type=str, default='./CQL-SAC-FlexibleRoom_cnn_lstm_deva_42kstepCQL-SAC500.pth', help="")
-    parser.add_argument("--input_type", type=str, default='Deva', help="")
-
-
+    parser.add_argument("--env", type=str, default="UnrealTrackGeneral-UrbanCity-ContinuousColor-v0", help="Gym environment name, default: Pendulum-v0")
+    parser.add_argument("--max_distractor", type=int, default=2, help="")
+    parser.add_argument("--load_agent_model", type=str, default='trained_models/CQL-SAC-FlexibleRoom_cnn_lstm_deva_42kstepCQL-SAC-2stCQL-SAC600.pth', help="")
+    parser.add_argument("--input_type", type=str, default='Deva_cnn_lstm', help="")
     parser.add_argument("--seed", type=int, default=0, help="Seed, default: 1")
     parser.add_argument("--hidden_size", type=int, default=256, help="")
     parser.add_argument("--learning_rate", type=float, default=3e-4, help="")
@@ -80,24 +78,6 @@ def evaluate(env, agent, config,gd_model,sam_model,deva_cfg):
     deva.next_voting_frame = deva_cfg['num_voting_frames'] - 1
     deva.enabled_long_id()
     result_saver = ResultSaver('./deva_out', None, dataset='demo', object_manager=deva.object_manager)
-    # if 'Cape_buffalo' in env.unwrapped.player_list[env.unwrapped.target_id]:
-    #     deva_cfg['prompt']='buffalo'
-    # elif 'horse' in env.unwrapped.player_list[env.unwrapped.target_id]:
-    #     deva_cfg['prompt']='horse'
-    # elif 'sheep' in env.unwrapped.player_list[env.unwrapped.target_id]:
-    #     deva_cfg['prompt']='sheep'
-    #
-    # elif 'pig' in env.unwrapped.player_list[env.unwrapped.target_id]:
-    #     deva_cfg['prompt']='pig'
-    #
-    # elif 'Cane_corso' in env.unwrapped.player_list[env.unwrapped.target_id]:
-    #     deva_cfg['prompt']='dog'
-    #
-    # elif 'Beagle' in env.unwrapped.player_list[env.unwrapped.target_id]:
-    #     deva_cfg['prompt']='dog'
-    #
-    # elif 'AfricaElephant' in env.unwrapped.player_list[env.unwrapped.target_id]:
-    #     deva_cfg['prompt']='elephant'
 
     while True:
         with torch.cuda.amp.autocast(enabled=deva_cfg['amp']):
@@ -149,39 +129,15 @@ def evaluate(env, agent, config,gd_model,sam_model,deva_cfg):
                 next_state=next_state_deva
             if 'depth' in config.input_type.lower() or 'rgbd' in config.input_type.lower():
                 next_state= np.concatenate([next_state_deva,next_state_depth],axis=2)
-            if 'mlp' in config.input_type.lower():
-                next_state = np.array(bounding_boxes)
-            cv2.imshow('deva_res',next_state_deva)
             cv2.waitKey(1)
         with (torch.no_grad()):
-            if 'mlp' not in config.input_type.lower():
-                next_state = cv2.resize(next_state.astype(np.float32),(64,64)).transpose(2,0,1)
-                next_state = torch.from_numpy(next_state).float().cuda().unsqueeze(0)
-            else:
-                next_state = torch.from_numpy(next_state).float().cuda().unsqueeze(0).unsqueeze(0)
-
-            # import pdb
-            # pdb.set_trace()
+            next_state = cv2.resize(next_state.astype(np.float32),(64,64)).transpose(2,0,1)
+            next_state = torch.from_numpy(next_state).float().cuda().unsqueeze(0)
             if 'cnn' in config.input_type.lower() and 'lstm' in config.input_type.lower():
                 next_state, ht, ct = agent.CNN_LSTM.inference(next_state.unsqueeze(0), ht, ct)
                 # next_state = np.array(next_state.cpu())
                 action = agent.get_action(next_state, eval=True)
                 action=np.array(action)[0]
-
-
-            elif 'cnn' in config.input_type.lower():
-                next_state = agent.CNN_Simple(next_state)
-                next_state=torch.reshape(next_state,(1,-1))
-                action = agent.get_action(next_state, eval=True)
-                action = np.array(action)
-
-                # next_state = np.array(next_state.reshape(1, -1).cpu())
-            elif 'mlp' in config.input_type.lower():
-                next_state = agent.MLP_LSTM(next_state)
-                next_state=torch.reshape(next_state,(1,-1))
-                action = agent.get_action(next_state, eval=True)
-                action = np.array(action)
-
         assert len(action.shape)==2
         # 将数据从-1到1的范围反向归一化到0到1的范围
         denormalized_data = (action + 1) / 2
@@ -198,11 +154,9 @@ def evaluate(env, agent, config,gd_model,sam_model,deva_cfg):
         cv2.waitKey(1)
         rewards += reward
         eval_steps += 1
-
         if done:
             # result_saver.is_first_frame=True
             cv2.destroyWindow('show')
-            cv2.destroyWindow('deva_res')
             break
     return rewards, eval_steps
 
@@ -212,8 +166,7 @@ def eval_average(config, agent, env,gd_model,sam_model,deva_cfg):
     AR = []
     EL = []
     start_time=time.time()
-    for i in range(0, 30):
-        # try:
+    for i in range(0, 5):
         reward, eval_steps = evaluate(env, agent, config,gd_model,sam_model,deva_cfg)
         print('episode：',i,'reward:', reward, ' el:', eval_steps)
 

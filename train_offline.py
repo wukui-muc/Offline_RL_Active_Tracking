@@ -20,17 +20,14 @@ import os
 import cv2
 torch.autograd.set_detect_anomaly = True
 from agent_CNN_LSTM import CQLSAC_CNN_LSTM, CQLSAC_CNN
-from agent_MLP_LSTM import CQLSAC_MLP_LSTM
 
 # os.environ['WANDB_MODE']='offline'
 
 def get_config():
     parser = argparse.ArgumentParser(description='RL')
-    parser.add_argument("--run_name", type=str, default="CQL-SAC-FlexibleRoom_cnn_lstm_deva_nowhite", help="Run name, default: CQL-SAC")
-    # parser.add_argument("--env", type=str, default="UnrealTrackGeneral-FlexibleRoom-ContinuousColor-v1", help="Gym environment name, default: Pendulum-v0")
-    # parser.add_argument("--buffer_path", type=str,default='/home/wuk/active_tracking_rl/logs/Sampler_Buffer/expert_64px_v1_pos')
+    parser.add_argument("--run_name", type=str, default="CQL-SAC-active-tracking_agent", help="Run name, default: CQL-SAC")
     parser.add_argument("--buffer_path", type=str,
-                        default='/home/wuk/dataset/inperfect_expert_240px_v4_deva_v1+v2/inperfect_expert_64px_v4_deva_240px_nowhite')
+                        default=None)
     parser.add_argument("--episodes", type=int, default=1000, help="Number of episodes, default: 200")
     parser.add_argument("--buffer_size", type=int, default=100_000, help="Maximal training dataset size, default: 100_000")
     parser.add_argument("--seed", type=int, default=1, help="Seed, default: 1")
@@ -62,16 +59,13 @@ def load_Buffer(buffer ,path ,config):
     # for d in range(0,1):
         print('loading :', data_list[d])
         dict_tmp = torch.load(os.path.join(path, data_list[d]))
-        if ('deva' in config.input_type.lower() or 'image' in config.input_type.lower()) and 'mlp' not in config.input_type.lower():
+        if ('deva' in config.input_type.lower() or 'image' in config.input_type.lower()) or 'mask' in config.input_type.lower():
         # states
             state_tmp = np.array([np.array(x[:, :, 0:3]) for x in dict_tmp['image']])[:-1]  # .transpose(0 ,3 ,1 ,2)
             next_state_tmp = np.array([np.array(x[:, :, 0:3]) for x in dict_tmp['image']])[1:]  # .transpose(0 ,3 ,1 ,2)
         if 'devadepth' in config.input_type.lower() or 'rgbd' in config.input_type.lower():
             state_tmp = np.array([np.array(x[:, :, 0:4]) for x in dict_tmp['image']])[:-1]  # .transpose(0 ,3 ,1 ,2)
             next_state_tmp = np.array([np.array(x[:, :, 0:4]) for x in dict_tmp['image']])[1:]  # .transpose(0 ,3 ,1 ,2)
-        if 'mlp' in config.input_type.lower():
-            state_tmp = np.array([np.array(x) for x in dict_tmp['image']])[:-1]  # .transpose(0 ,3 ,1 ,2)
-            next_state_tmp = np.array([np.array(x) for x in dict_tmp['image']])[1:]  # .transpose(0 ,3 ,1 ,2)
         # actions
         act_tmp = np.array([np.array(x) for x in dict_tmp['action']])[:-1].squeeze(axis=1)
         # rewards
@@ -79,34 +73,22 @@ def load_Buffer(buffer ,path ,config):
         assert state_tmp.shape[0] == next_state_tmp.shape[0] and re_tmp.shape[0] == next_state_tmp.shape[0] and \
                next_state_tmp.shape[0] == act_tmp.shape[0]
         for i in range(0, state_tmp.shape[0]):
-            # cv2.imshow('mask', state_tmp[i])
-            # cv2.waitKey(1)
             if i % state_tmp.shape[0] == 0 and i > 0:
                 done = True
             else:
                 done = False
-            if 'mlp' not in config.input_type.lower():
-                buffer.add(
-                    torch.from_numpy(np.array(cv2.resize(state_tmp[i], (64, 64)).transpose(2, 0, 1))).float().cuda(),
-                    torch.from_numpy(act_tmp[i]).float().cuda(),
-                    torch.from_numpy(np.array(re_tmp[i])).float().cuda(),
-                    torch.from_numpy(
-                        np.array(cv2.resize(next_state_tmp[i], (64, 64)).transpose(2, 0, 1))).float().cuda(),
-                    torch.from_numpy(np.array(done)).float().cuda())
-            else:
-
-                buffer.add(
-                    torch.from_numpy(state_tmp[i]).float().cuda(),
-                    torch.from_numpy(act_tmp[i]).float().cuda(),
-                    torch.from_numpy(np.array(re_tmp[i])).float().cuda(),
-                    torch.from_numpy(next_state_tmp[i]).float().cuda(),
-                    torch.from_numpy(np.array(done)).float().cuda())
+            buffer.add(
+                torch.from_numpy(np.array(cv2.resize(state_tmp[i], (64, 64)).transpose(2, 0, 1))).float().cuda(),
+                torch.from_numpy(act_tmp[i]).float().cuda(),
+                torch.from_numpy(np.array(re_tmp[i])).float().cuda(),
+                torch.from_numpy(
+                    np.array(cv2.resize(next_state_tmp[i], (64, 64)).transpose(2, 0, 1))).float().cuda(),
+                torch.from_numpy(np.array(done)).float().cuda())
 
     print('loading dataset buffer finished.')
     return buffer
 
 
-# def train(config,deva_model, deva_cfg, gd_model, sam_model):
 def train(config):
 
     np.random.seed(config.seed)
@@ -248,5 +230,4 @@ def train(config):
 if __name__ == "__main__":
     config = get_config()
     train(config)
-    # config, deva_model, deva_cfg, gd_model, sam_model= get_config()
-    # train(config,deva_model, deva_cfg, gd_model, sam_model)
+
