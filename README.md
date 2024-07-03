@@ -8,13 +8,7 @@ Peking University, BeiHang University, National University of Singapore and The 
 
 ECCV 2024
 
-[[arXiV]](https://arxiv.org/abs/2404.09857)  [[Project Page]](https://sites.google.com/d/1TlnjsKbF2IgvdM9-aMJLShlnVBlS9ttN/p/1NZNTU2LmzgeXYYwuFn4w4r9pZaw-gdYN/edit?pli=1) 
-## Highlights
-1. 
-2. 
-## Abstract
-
-## Demo Videos
+[[arXiV]](https://arxiv.org/abs/2404.09857)  [[Project Page]](https://sites.google.com/d/1TlnjsKbF2IgvdM9-aMJLShlnVBlS9ttN/p/1NZNTU2LmzgeXYYwuFn4w4r9pZaw-gdYN/edit?pli=1)  
 
 ## Installation
 Our model rely on the DEVA as the vision foundation model and Gym-Unrealcv as the evaluation environment, which requires to install three additional packages: Grounded-Segment-Anything, DEVA and Gym-Unrealcv. Note that we modified the original DEVA to adapt to our task, we provide the modified version in the repository.
