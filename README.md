@@ -16,14 +16,6 @@ ECCV 2024
 
 ## Demo Videos
 
-### Demo with Grounded Segment Anything (text prompt: "guinea pigs" and "chicken"):
-
-https://github.com/hkchengrex/Tracking-Anything-with-DEVA/assets/7107196/457a9a6a-86c3-4c5a-a3cc-25199427cd11
-
-Source: https://www.youtube.com/watch?v=FM9SemMfknA
-
-
-
 ## Installation
 Our model rely on the DEVA as the vision foundation model and Gym-Unrealcv as the evaluation environment, which requires to install three additional packages: Grounded-Segment-Anything, DEVA and Gym-Unrealcv. Note that we modified the original DEVA to adapt to our task, we provide the modified version in the repository.
 **Prerequisite:**
