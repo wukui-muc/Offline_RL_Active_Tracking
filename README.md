@@ -1,7 +1,7 @@
 # Empowering Embodied Visual Tracking with Visual Foundation Models and Offline RL
 
-![titlecard]()
-![Example Image](./Overview/overview_v7.pdf)
+![Example Image](Overview/overview_v7.pdf)  
+
 [FangWei Zhong](https://fangweizhong.xyz/), [Kui Wu](), [Hai Ci](), [Chu-ran Wang ](), [Hao Chen]()
 
 Peking University, BeiHang University, National University of Singapore and The Hong Kong Polytechnic University.
