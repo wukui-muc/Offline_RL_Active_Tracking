@@ -1,17 +1,11 @@
 import time
 
 import numpy as np
-from collections import deque
 import torch
-import wandb
 import argparse
-from buffer import ReplayBuffer
-import glob
-from utils import save, collect_random, evaluate
+from utils import evaluate
 import random
 import gym
-# from gym import Wrapper
-# import collections
 import os
 import cv2
 from gym_unrealcv.envs.wrappers import time_dilation, early_done, monitor, agents, augmentation
