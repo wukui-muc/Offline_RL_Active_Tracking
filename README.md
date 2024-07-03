@@ -1,6 +1,6 @@
 # Empowering Embodied Visual Tracking with Visual Foundation Models and Offline RL
 
-![Example Image](Overview/overview_v7.pdf)  
+![Example Image](Overview/overview_v7.png)  
 
 [FangWei Zhong](https://fangweizhong.xyz/), [Kui Wu](), [Hai Ci](), [Chu-ran Wang ](), [Hao Chen]()
 
