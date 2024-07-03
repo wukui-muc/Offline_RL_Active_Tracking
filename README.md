@@ -65,6 +65,7 @@ Before running the environments, you need to prepare unreal binaries. You can lo
 ```bash
 python load_env.py -e {ENV_NAME}
 #python load_env.py -e UrbanCityMulti
+sudo chmod -R 777 ./   #solve the permission problem
 ```
 
 ## Quick Start
