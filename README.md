@@ -25,7 +25,6 @@ git clone https://github.com/wukui-muc/Offline_RL_Active_Tracking.git
 ```
 
 **Install Grounded-Segment-Anything:**  
-You should set the environment variable manually as follows if you want to build a local GPU environment for Grounded-SAM:
 ```bash
 cd Offline_RL_Active_Tracking
 git clone https://github.com/hkchengrex/Grounded-Segment-Anything
