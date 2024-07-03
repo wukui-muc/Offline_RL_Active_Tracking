@@ -6,20 +6,20 @@ def add_ext_eval_args(parser: ArgumentParser):
 
     # Grounded Segment Anything
     parser.add_argument('--GROUNDING_DINO_CONFIG_PATH',
-                        default='/home/wuk/Tracking-Anything-with-DEVA/saves/GroundingDINO_SwinT_OGC.py')
+                        default='./Tracking-Anything-with-DEVA/saves/GroundingDINO_SwinT_OGC.py')
 
     parser.add_argument('--GROUNDING_DINO_CHECKPOINT_PATH',
-                        default='/home/wuk/Tracking-Anything-with-DEVA/saves/groundingdino_swint_ogc.pth')
+                        default='./Tracking-Anything-with-DEVA/saves/groundingdino_swint_ogc.pth')
 
     parser.add_argument('--DINO_THRESHOLD', default=0.35, type=float)
     parser.add_argument('--DINO_NMS_THRESHOLD', default=0.8, type=float)
 
     # Segment Anything (SAM) models
     parser.add_argument('--SAM_ENCODER_VERSION', default='vit_h')
-    parser.add_argument('--SAM_CHECKPOINT_PATH', default='/home/wuk/Tracking-Anything-with-DEVA/saves/sam_vit_h_4b8939.pth')
+    parser.add_argument('--SAM_CHECKPOINT_PATH', default='./Tracking-Anything-with-DEVA/saves/sam_vit_h_4b8939.pth')
 
     # Mobile SAM
-    parser.add_argument('--MOBILE_SAM_CHECKPOINT_PATH', default='/home/wuk/Tracking-Anything-with-DEVA/saves/mobile_sam.pt')
+    parser.add_argument('--MOBILE_SAM_CHECKPOINT_PATH', default='./Tracking-Anything-with-DEVA/saves/mobile_sam.pt')
 
     # Segment Anything (SAM) parameters
     # parser.add_argument('--SAM_NUM_POINTS_PER_SIDE',
