@@ -14,7 +14,7 @@ ECCV 2024
 Our model rely on the DEVA as the vision foundation model and Gym-Unrealcv as the evaluation environment, which requires to install three additional packages: Grounded-Segment-Anything, DEVA and Gym-Unrealcv. Note that we modified the original DEVA to adapt to our task, we provide the modified version in the repository.
 **Prerequisite:**
 - Python 3.9
-- PyTorch 2.1.1 and corresponding torchvision
+- PyTorch 2.0.1+ and corresponding torchvision
 - gym_unrealcv(https://github.com/zfw1226/gym-unrealcv)
 - Grounded-Segment-Anything (https://github.com/hkchengrex/Grounded-Segment-Anything)
 - DEVA (https://github.com/hkchengrex/Tracking-Anything-with-DEVA)
