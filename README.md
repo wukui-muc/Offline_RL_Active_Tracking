@@ -23,19 +23,13 @@ Our model rely on the DEVA as the vision foundation model and Gym-Unrealcv as th
 ```bash
 git clone https://github.com/wukui-muc/Offline_RL_Active_Tracking.git
 ```
-**Clone Grounded-Segment-Anything:**
-```bash
-cd Offline_RL_Active_Tracking
-git clone https://github.com/hkchengrex/Grounded-Segment-Anything
-```
-**Clone Gym-UnrealCV:**
-```bash
-git clone https://github.com/zfw1226/gym-unrealcv.git
-```
 
 **Install Grounded-Segment-Anything:**  
 You should set the environment variable manually as follows if you want to build a local GPU environment for Grounded-SAM:
 ```bash
+cd Offline_RL_Active_Tracking
+git clone https://github.com/hkchengrex/Grounded-Segment-Anything
+
 export AM_I_DOCKER=False
 export BUILD_WITH_CUDA=True
 export CUDA_HOME=/path/to/cuda/
@@ -58,13 +52,17 @@ bash scripts/download_models.sh #download the pretrained models
 **Install Gym-Unrealcv:**
 ```bash
 cd ..
+git clone https://github.com/zfw1226/gym-unrealcv.git
 cd gym-unrealcv
 pip install -e .
 ```
 Before running the environments, you need to prepare unreal binaries. You can load them from clouds by running load_env.py
 ```bash
 python load_env.py -e {ENV_NAME}
-#python load_env.py -e UrbanCityMulti
+
+# To run the demo evaluation script, you need to load the UrbanCityMulti environment and textures by running:
+python load_env.py -e UrbanCityMulti
+python load_env.py -e Textures
 sudo chmod -R 777 ./   #solve the permission problem
 ```
 
