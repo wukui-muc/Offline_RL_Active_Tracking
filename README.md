@@ -32,6 +32,8 @@ git clone https://github.com/hkchengrex/Grounded-Segment-Anything
 export AM_I_DOCKER=False
 export BUILD_WITH_CUDA=True
 export CUDA_HOME=/path/to/cuda/
+# /path/to/cuda/ is the path to the cuda installation directory, e.g., /usr/local/cuda
+# if you install the cuda in conda, it should be {path_to_conda}/env/{conda_env_name}/lib/, e.g., ~/anaconda3/env/offline_evt/lib/
 
 cd Grounded-Segment-Anything
 python -m pip install -e segment_anything
@@ -42,8 +44,7 @@ pip install --upgrade diffusers[torch]
 Directly install the modified DEVA in the repository  
 (If you encounter the `File "setup.py" not found` error, upgrade your pip with `pip install --upgrade pip`)
 ```bash
-cd .. # go back to the root directory
-cd Tracking-Anything-with-DEVA
+cd ../Tracking-Anything-with-DEVA # go to the DEVA directory
 pip install -e .
 bash scripts/download_models.sh #download the pretrained models
 ```
@@ -67,23 +68,27 @@ sudo chmod -R 777 ./   #solve the permission problem
 
 ## Quick Start
 
-### Evaluation
-
-```bash
-python Eval_tracking_agent.py --env UnrealTrackGeneral-UrbanCity-ContinuousColor-v0 --chunk_size 1 --amp --min_mid_term_frames 5 --max_mid_term_frames 10 --detection_every 20 --prompt person.obstacles 
-```
-
 ### Training
 
 ```bash
 python train_offline --buffer_path {Data-Path}
 ```
 
+### Evaluation
+
+```bash
+python Eval_tracking_agent.py --env UnrealTrackGeneral-UrbanCity-ContinuousColor-v0 --chunk_size 1 --amp --min_mid_term_frames 5 --max_mid_term_frames 10 --detection_every 20 --prompt person.obstacles 
+```
 
 ## Citation
 
 ```bibtex
-
+@inproceedings{zhong2024empowering,
+  title={Empowering Embodied Visual Tracking with Visual Foundation Models and Offline RL},
+  author={Zhong, Fangwei and Wu, Kui and Ci, Hai and Wang, Churan and Chen, Hao},
+  booktitle={Proceedings of the European Conference on Computer Vision (ECCV)},
+  year={2024}
+}
 ```
 
 ## References
