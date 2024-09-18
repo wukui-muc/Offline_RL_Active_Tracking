@@ -6,20 +6,21 @@ def add_ext_eval_args(parser: ArgumentParser):
 
     # Grounded Segment Anything
     parser.add_argument('--GROUNDING_DINO_CONFIG_PATH',
-                        default='./Tracking-Anything-with-DEVA/saves/GroundingDINO_SwinT_OGC.py')
+                        default='./saves/GroundingDINO_SwinT_OGC.py')
 
     parser.add_argument('--GROUNDING_DINO_CHECKPOINT_PATH',
-                        default='./Tracking-Anything-with-DEVA/saves/groundingdino_swint_ogc.pth')
+                        default='./saves/groundingdino_swint_ogc.pth')
 
-    parser.add_argument('--DINO_THRESHOLD', default=0.35, type=float)
-    parser.add_argument('--DINO_NMS_THRESHOLD', default=0.8, type=float)
+    parser.add_argument('--DINO_THRESHOLD', default=0.22, type=float)
+    parser.add_argument('--DINO_NMS_THRESHOLD', default=0.5, type=float)
+
 
     # Segment Anything (SAM) models
     parser.add_argument('--SAM_ENCODER_VERSION', default='vit_h')
-    parser.add_argument('--SAM_CHECKPOINT_PATH', default='./Tracking-Anything-with-DEVA/saves/sam_vit_h_4b8939.pth')
+    parser.add_argument('--SAM_CHECKPOINT_PATH', default='./saves/sam_vit_h_4b8939.pth')
 
     # Mobile SAM
-    parser.add_argument('--MOBILE_SAM_CHECKPOINT_PATH', default='./Tracking-Anything-with-DEVA/saves/mobile_sam.pt')
+    parser.add_argument('--MOBILE_SAM_CHECKPOINT_PATH', default='. /saves/mobile_sam.pt')
 
     # Segment Anything (SAM) parameters
     # parser.add_argument('--SAM_NUM_POINTS_PER_SIDE',
@@ -33,19 +34,27 @@ def add_ext_eval_args(parser: ArgumentParser):
     parser.add_argument('--SAM_NUM_POINTS_PER_SIDE',
                         type=int,
                         help='Number of points per side for prompting SAM',
-                        default=8)
+                        default=32)
     parser.add_argument('--SAM_NUM_POINTS_PER_BATCH',
                         type=int,
                         help='Number of points computed per batch',
-                        default=8)
+                        default=32)
     parser.add_argument('--SAM_PRED_IOU_THRESHOLD',
                         type=float,
                         help='(Predicted) IoU threshold for SAM',
-                        default=0.8)
+                        default=0.6)
     parser.add_argument('--SAM_OVERLAP_THRESHOLD',
                         type=float,
                         help='Overlap threshold for overlapped mask suppression in SAM',
                         default=0.8)
+    # parser.add_argument('--SAM_PRED_IOU_THRESHOLD',
+    #                     type=float,
+    #                     help='(Predicted) IoU threshold for SAM',
+    #                     default=0.7)
+    # parser.add_argument('--SAM_OVERLAP_THRESHOLD',
+    #                     type=float,
+    #                     help='Overlap threshold for overlapped mask suppression in SAM',
+    #                     default=0.6)
 
 
 def add_text_default_args(parser):

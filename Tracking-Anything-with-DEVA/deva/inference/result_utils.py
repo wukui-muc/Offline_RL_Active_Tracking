@@ -237,6 +237,17 @@ def save_result(queue: Queue):
                 area_ratio=[]
                 distance=[]
                 target_tmp_id = []
+                # id_tmp = [segment['id'] for segment in segments_info if segment['category_id'] == 0]
+                if saver.is_first_frame:
+
+                    filtered_segments = [segment for segment in segments_info if segment['category_id'] == 0]
+                    if len(filtered_segments)>0:
+                        highest_score_segment = max(filtered_segments, key=lambda x: x['score'])
+                        saver.target_id=highest_score_segment['id']
+                        saver.is_first_frame = False
+
+                # assert len(id_tmp) == 1
+                # saver.target_id = id_tmp[0]
                 for id in all_obj_ids:
                     if id ==saver.target_id:
                         colored_mask = (256**3 -1)
@@ -244,33 +255,33 @@ def save_result(queue: Queue):
                         colored_mask = saver.id2rgb_converter._id_to_rgb(id)
                     obj_mask = (out_mask == id)
                     rgb_mask[obj_mask] = colored_mask
-                    if not np.all(obj_mask==0):
-                        coords=np.where(obj_mask!=0)
-                        # 计算坐标的最小和最大值来得到bounding box
-                        y_min, x_min = np.min(coords[0]), np.min(coords[1])
-                        y_max, x_max = np.max(coords[0]), np.max(coords[1])
-                        bbox=[x_min,y_min,x_max,y_max]
-                        bbox_area = (x_max-x_min)*(y_max-y_min)
-                        area_ratio_tmp=bbox_area/(obj_mask.shape[0]*obj_mask.shape[1])
-                        if area_ratio_tmp>0.01:
-                            area_ratio.append(area_ratio_tmp)
-                            expect_mid_x=obj_mask.shape[0]/2
-                            expect_mid_y = obj_mask.shape[1]/2 + 0.12 * (obj_mask.shape[1] / 2)
-                            distance.append(np.square((x_max+x_min)/2 -expect_mid_x)+ np.square((y_max+y_min)/2 -expect_mid_y))
-                            target_tmp_id.append(id)
-                if saver.is_first_frame and distance!=[]:
-                    tmp_id = np.argmin(distance)
-                    if area_ratio[tmp_id]<0.3 :
-                        saver.target_id = target_tmp_id[tmp_id]
-                        target_colored = saver.id2rgb_converter._id_to_rgb(256**3 -1)
-                        target_mask = (out_mask == saver.target_id)
-                        rgb_mask[target_mask] = target_colored
-                        saver.is_first_frame = False
-                    else:
-
-                        cv2.imwrite('bbox.jpg',rgb_mask)
-
-                        raise ValueError('Wrong initial mask')
+                    # if not np.all(obj_mask==0):
+                    #     coords=np.where(obj_mask!=0)
+                    #     # 计算坐标的最小和最大值来得到bounding box
+                    #     y_min, x_min = np.min(coords[0]), np.min(coords[1])
+                    #     y_max, x_max = np.max(coords[0]), np.max(coords[1])
+                    #     bbox=[x_min,y_min,x_max,y_max]
+                    #     bbox_area = (x_max-x_min)*(y_max-y_min)
+                    #     area_ratio_tmp=bbox_area/(obj_mask.shape[0]*obj_mask.shape[1])
+                    #     if area_ratio_tmp>0.01:
+                    #         area_ratio.append(area_ratio_tmp)
+                    #         expect_mid_x=obj_mask.shape[0]/2
+                    #         expect_mid_y = obj_mask.shape[1]/2 + 0.12 * (obj_mask.shape[1] / 2)
+                    #         distance.append(np.square((x_max+x_min)/2 -expect_mid_x)+ np.square((y_max+y_min)/2 -expect_mid_y))
+                    #         target_tmp_id.append(id)
+                # if saver.is_first_frame and distance!=[]:
+                #     tmp_id = np.argmin(distance)
+                #     if area_ratio[tmp_id]<0.3 :
+                #         saver.target_id = target_tmp_id[tmp_id]
+                #         target_colored = saver.id2rgb_converter._id_to_rgb(256**3 -1)
+                #         target_mask = (out_mask == saver.target_id)
+                #         rgb_mask[target_mask] = target_colored
+                #         saver.is_first_frame = False
+                #     else:
+                #
+                #         cv2.imwrite('bbox.jpg',rgb_mask)
+                #
+                #         raise ValueError('Wrong initial mask')
                 # cv2.imshow('rgb_mask',rgb_mask)
                 # cv2.waitKey(10)
                 out_img = Image.fromarray(rgb_mask)

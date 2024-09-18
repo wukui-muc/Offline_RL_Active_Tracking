@@ -5,7 +5,7 @@ from deva.model.network import DEVA
 
 
 def add_common_eval_args(parser: ArgumentParser):
-    parser.add_argument('--DEVA_model', default='./Tracking-Anything-with-DEVA/saves/DEVA-propagation.pth')
+    parser.add_argument('--DEVA_model', default='./saves/DEVA-propagation.pth')
 
     parser.add_argument('--output', default=None)
     parser.add_argument(
