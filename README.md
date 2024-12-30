@@ -84,10 +84,12 @@ python Eval_tracking_agent.py --env UnrealTrackGeneral-UrbanCity-ContinuousColor
 
 ```bibtex
 @inproceedings{zhong2024empowering,
-  title={Empowering Embodied Visual Tracking with Visual Foundation Models and Offline RL},
+  title={Empowering embodied visual tracking with visual foundation models and offline rl},
   author={Zhong, Fangwei and Wu, Kui and Ci, Hai and Wang, Churan and Chen, Hao},
-  booktitle={Proceedings of the European Conference on Computer Vision (ECCV)},
-  year={2024}
+  booktitle={European Conference on Computer Vision},
+  pages={139--155},
+  year={2024},
+  organization={Springer}
 }
 ```
 
