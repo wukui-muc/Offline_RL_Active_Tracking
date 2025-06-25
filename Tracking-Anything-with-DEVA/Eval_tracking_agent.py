@@ -28,7 +28,7 @@ def get_config():
     parser.add_argument("--run_name", type=str, default="EvaluateModel", help="Run name, default: CQL-SAC")
     parser.add_argument("--env", type=str, default="UnrealTrack-demonstration_BUNKER-ContinuousColor-v0", help="Gym environment name, default: Pendulum-v0")
     parser.add_argument("--max_distractor", type=int, default=2, help="")
-    parser.add_argument("--load_agent_model", type=str, default='/home/wuk/CQL/CQL-SAC/trained_models/CQL-SAC-finetuned_v1CQL-SAC400.pth', help="")
+    parser.add_argument("--load_agent_model", type=str, default='../trained_models/CQL-SAC-FlexibleRoom_cnn_lstm_deva_42kstepCQL-SAC-2stCQL-SAC600.pth', help="")
     parser.add_argument("--input_type", type=str, default='Deva_cnn_lstm', help="")
     parser.add_argument("--seed", type=int, default=0, help="Seed, default: 1")
     parser.add_argument("--hidden_size", type=int, default=256, help="")
@@ -77,7 +77,7 @@ def evaluate(env, agent, config,gd_model,sam_model,deva_cfg):
 
     max_speed = random.randint(50, 60)
     # max_speed = 80
-    env.unwrapped.unrealcv.set_max_speed(env.unwrapped.player_list[env.unwrapped.target_id], max_speed)
+    # env.unwrapped.unrealcv.set_max_speed(env.unwrapped.player_list[env.unwrapped.target_id], max_speed)
 
     while True:
         with torch.cuda.amp.autocast(enabled=deva_cfg['amp']):
@@ -141,7 +141,7 @@ def evaluate(env, agent, config,gd_model,sam_model,deva_cfg):
         else:
             action = [[denormalized_data[0][0], denormalized_data[0][1]]]
         next_state, reward, done, info = env.step(action)
-        # cv2.imshow('show', next_state[0][:,:,0:3].astype(np.uint8))
+        cv2.imshow('show', next_state[0][:,:,0:3].astype(np.uint8))
         # if eval_steps==49:
         #     print('eval_steps:', eval_steps)
         cv2.waitKey(1)
@@ -214,7 +214,7 @@ def Eval_model(config,deva_model, deva_cfg, gd_model, sam_model):
     env.unwrapped.agents_type = ['player'] #['player', 'animal']
     if 'SnowForest' not in str(config.env):
         env = augmentation.RandomPopulationWrapper(env, config.max_distractor, config.max_distractor, random_target=False)
-        env = configUE.ConfigUEWrapper(env, offscreen=True, resolution=(160, 160))
+        # env = configUE.ConfigUEWrapper(env, offscreen=True, resolution=(160, 160))
         env = agents.NavAgents(env, mask_agent=True)
     env.seed(config.seed)
 
