@@ -27,6 +27,7 @@ git clone https://github.com/wukui-muc/Offline_RL_Active_Tracking.git
 **Install Pytorch:**
 ```bash
 pip install torch==2.1.2 torchvision==0.16.2 torchaudio==2.1.2 --index-url https://download.pytorch.org/whl/cu121
+pip install setuptools==64
 ```
 
 **Install Grounded-Segment-Anything:**  
@@ -60,6 +61,7 @@ cd ..
 git clone https://github.com/zfw1226/gym-unrealcv.git
 cd gym-unrealcv
 pip install -e .
+pip install numpy==1.26.3
 ```
 Before running the environments, you need to prepare unreal binaries. You can load them from clouds by running load_env.py
 ```bash
