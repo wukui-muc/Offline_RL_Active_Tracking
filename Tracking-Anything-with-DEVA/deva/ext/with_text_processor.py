@@ -136,12 +136,13 @@ def process_frame_with_text(deva: DEVAInferenceCore,
             # wait for more frames before proceeding
             deva.add_to_temporary_buffer(frame_info)
             prob = deva.incorporate_detection(image, mask, segments_info)
-            result_saver.save_mask(prob,
+            result=result_saver.save_mask(prob,
                                    frame_name,
                                    need_resize=need_resize,
                                    shape=(h, w),
                                    image_np=image_np,
                                    prompts=prompts)
+            return result
         else:
             if ti% cfg['num_voting_frames']==0:
                 mask, segments_info = make_segmentation_with_text(cfg, image_np, gd_model, sam_model,
@@ -156,13 +157,14 @@ def process_frame_with_text(deva: DEVAInferenceCore,
                     keyframe_selection='last')
                 prob = deva.incorporate_detection(image, mask, new_segments_info)
 
-                result_saver.save_mask(prob,
+                result=result_saver.save_mask(prob,
                                        frame_name,
                                        need_resize=need_resize,
                                        shape=(h, w),
                                        image_np=image_np,
                                        prompts=prompts)
                 deva.pop_buffer()
+                return result
             else:
                 mask, segments_info = make_segmentation_with_text(cfg, image_np, gd_model, sam_model,
                                                                   prompts, new_min_side)
@@ -174,12 +176,13 @@ def process_frame_with_text(deva: DEVAInferenceCore,
 
 
                 prob = deva.step(image, None, None)
-                result_saver.save_mask(prob,
+                result=result_saver.save_mask(prob,
                                        frame_name,
                                        need_resize=need_resize,
                                        shape=(h, w),
                                        image_np=image_np,
                                        prompts=prompts)
                 deva.pop_buffer()
+                return result
 
 
