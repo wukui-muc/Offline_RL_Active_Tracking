@@ -78,6 +78,8 @@ sudo chmod -R 777 ./   #solve the permission problem
 
 ### Training
 
+We have released the training dataset used in paper, which is pre-processed by DEVA. you can download it from [here](https://modelscope.cn/datasets/UnrealZoo/EVT_Dataset_with_Multi_Level_Noise)
+
 ```bash
 python train_offline --buffer_path {Data-Path}
 ```
